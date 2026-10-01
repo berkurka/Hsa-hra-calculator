@@ -1,0 +1,8 @@
+{
+  "name": "hsa-hra-calculator",
+  "private": true,
+  "description": "Static HRA vs HSA health plan comparison for US federal tax year 2026.",
+  "scripts": {
+    "test": "node --test"
+  }
+}
