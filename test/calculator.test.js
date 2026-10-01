@@ -47,6 +47,24 @@ test("default inputs match the 2026 reference table (payroll toggle off)", () =>
   }
 });
 
+test("HRA total stays $2,808 until member share passes the $4,000 deposit", () => {
+  for (const billed of [0, 1500, 4000, 5000, 10000, 14000]) {
+    const judged = judge(evaluate(DEFAULT_INPUT, billed));
+    assert.ok(judged.hraShare <= 4000, `share at ${billed} was ${judged.hraShare}`);
+    assert.equal(judged.hraTotal, 2808, `HRA total at ${billed}`);
+  }
+
+  const atDeposit = evaluate(DEFAULT_INPUT, 14000);
+  assert.equal(atDeposit.hra.share, 4000);
+
+  const past = judge(evaluate(DEFAULT_INPUT, 15000));
+  assert.equal(past.hraShare, 4200);
+  assert.equal(past.hraTotal, 3008);
+
+  const zero = judge(evaluate(DEFAULT_INPUT, 0));
+  assert.equal(zero.hsaTotal, -1806);
+});
+
 test("crossover with default inputs is about $7,070 of billed charges", () => {
   const crossings = findCrossovers(DEFAULT_INPUT);
   assert.equal(crossings.length, 1);
