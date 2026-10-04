@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Compare an employer HRA health plan with an HSA plan for US federal tax year 2026.">
+  <title>HRA vs HSA — tax year 2026</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <p class="eyebrow"><span class="hra-ink">HRA</span> and <span class="hsa-ink">HSA</span> · tax year 2026</p>
+      <h1>Which plan costs less?</h1>
+      <p class="lede">Compare two employer health plans after premiums, deductibles, and tax savings. Change any number and the table, crossover, and chart update. Nothing is uploaded.</p>
+      <p class="disclaimer">A planning estimate, not tax advice.</p>
+    </header>
+
+    <main class="layout">
+      <form id="inputs" class="panel" autocomplete="off">
+        <h2>Your household</h2>
+
+        <div class="field">
+          <label for="income">Annual household income</label>
+          <input id="income" type="number" inputmode="decimal" min="0" step="any" value="170000">
+        </div>
+
+        <div class="field">
+          <label for="filing">Filing status</label>
+          <select id="filing">
+            <option value="mfj" selected>Married filing jointly</option>
+            <option value="single">Single</option>
+          </select>
+        </div>
+
+        <fieldset class="choices">
+          <legend>Deduction</legend>
+          <label class="choice">
+            <input type="radio" name="deduction" value="standard" checked>
+            <span id="standard-label">Standard ($32,200)</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="deduction" value="itemized">
+            <span>Itemized</span>
+          </label>
+          <div id="itemized-wrap" class="field nested" hidden>
+            <label for="itemized">Itemized amount</label>
+            <input id="itemized" type="number" inputmode="decimal" min="0" step="any" value="32200">
+          </div>
+        </fieldset>
+
+        <fieldset class="choices">
+          <legend>Coverage</legend>
+          <label class="choice">
+            <input type="radio" name="coverage" value="family" checked>
+            <span>Family</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="coverage" value="self">
+            <span>Self-only</span>
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="hsa-limit">HSA contribution limit</label>
+          <input id="hsa-limit" type="number" inputmode="decimal" min="0" step="any" value="8750">
+          <p id="limit-hint" class="hint"></p>
+        </div>
+
+        <div class="field">
+          <label for="state-rate">State income tax rate (%)</label>
+          <input id="state-rate" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="0">
+          <p class="hint">Leave at 0 to use federal tax only.</p>
+        </div>
+
+        <label class="switch">
+          <input id="payroll" type="checkbox">
+          <span>HSA contribution is made through payroll</span>
+        </label>
+        <p class="hint">On: premiums and your HSA contribution also avoid 7.65% FICA. Off: income tax only.</p>
+
+        <fieldset class="plan-card plan-hra">
+          <legend>HRA plan</legend>
+          <div class="field">
+            <label for="hra-deposit">Employer HRA deposit</label>
+            <input id="hra-deposit" type="number" inputmode="decimal" min="0" step="any" value="4000">
+          </div>
+          <div class="field">
+            <label for="hra-deductible">Deductible</label>
+            <input id="hra-deductible" type="number" inputmode="decimal" min="0" step="any" value="1500">
+          </div>
+          <div class="field">
+            <label for="hra-oop">In-network max out-of-pocket</label>
+            <input id="hra-oop" type="number" inputmode="decimal" min="0" step="any" value="7000">
+          </div>
+          <div class="field">
+            <label for="hra-premium">Employee premium per month</label>
+            <input id="hra-premium" type="number" inputmode="decimal" min="0" step="any" value="300">
+          </div>
+          <div class="field">
+            <label for="hra-coinsurance">Coinsurance after deductible (%)</label>
+            <input id="hra-coinsurance" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="20">
+          </div>
+        </fieldset>
+
+        <fieldset class="plan-card plan-hsa">
+          <legend>HSA plan</legend>
+          <div class="field">
+            <label for="hsa-deposit">Employer HSA deposit</label>
+            <input id="hsa-deposit" type="number" inputmode="decimal" min="0" step="any" value="1000">
+          </div>
+          <div class="field">
+            <label for="hsa-deductible">Deductible</label>
+            <input id="hsa-deductible" type="number" inputmode="decimal" min="0" step="any" value="4000">
+          </div>
+          <div class="field">
+            <label for="hsa-oop">Max out-of-pocket</label>
+            <input id="hsa-oop" type="number" inputmode="decimal" min="0" step="any" value="8000">
+          </div>
+          <div class="field">
+            <label for="hsa-premium">Employee premium per month</label>
+            <input id="hsa-premium" type="number" inputmode="decimal" min="0" step="any" value="96">
+          </div>
+          <div class="field">
+            <label for="hsa-coinsurance">Coinsurance after deductible (%)</label>
+            <input id="hsa-coinsurance" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="20">
+          </div>
+          <div class="field">
+            <label for="hsa-employee">Your HSA contribution</label>
+            <input id="hsa-employee" type="number" inputmode="decimal" min="0" step="any" value="7750">
+            <p id="contribution-hint" class="hint"></p>
+          </div>
+        </fieldset>
+
+        <button type="button" id="reset" class="secondary">Reset to defaults</button>
+      </form>
+
+      <div class="results">
+        <section class="callout" aria-live="polite">
+          <p class="callout-kicker">Crossover</p>
+          <p id="crossover-figure" class="callout-figure">—</p>
+          <p id="crossover-copy" class="callout-copy"></p>
+        </section>
+
+        <dl id="stats" class="stats"></dl>
+
+        <section>
+          <div class="section-head">
+            <h2>Scenario table</h2>
+            <p class="scroll-hint">Swipe sideways to see every column.</p>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <caption class="sr-only">Total cost of the HRA plan and the HSA plan at each billed amount</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Total billed <span>(before insurance)</span></th>
+                  <th scope="col">Your share, <span>HRA plan</span></th>
+                  <th scope="col">Your share, <span>HSA plan</span></th>
+                  <th scope="col">HRA total cost</th>
+                  <th scope="col">HSA total cost</th>
+                  <th scope="col">Better choice</th>
+                  <th scope="col">HSA left <span>for next year</span></th>
+                </tr>
+              </thead>
+              <tbody id="scenario-body"></tbody>
+            </table>
+          </div>
+          <div class="add-row">
+            <label for="custom-billed">Add a billed amount</label>
+            <div class="add-controls">
+              <input id="custom-billed" type="number" inputmode="decimal" min="0" step="any" placeholder="7500">
+              <button type="button" id="add-billed">Add row</button>
+            </div>
+            <p id="add-message" class="hint" role="status"></p>
+          </div>
+          <p class="note">Table amounts are rounded to the nearest dollar. A negative HSA total means you come out ahead at that level of bills.</p>
+        </section>
+
+        <section class="chart-section">
+          <h2>Total cost vs. billed amount</h2>
+          <ul class="legend">
+            <li><span class="swatch swatch-hra"></span> HRA total cost</li>
+            <li><span class="swatch swatch-hsa"></span> HSA total cost</li>
+          </ul>
+          <div id="chart"></div>
+          <p id="chart-readout" class="note">Hover the chart to read a billed amount.</p>
+        </section>
+
+        <section class="prose">
+          <h2>How this is calculated</h2>
+          <p>Each row is one guess at the year’s medical bills, measured as the total the providers bill before insurance. The same bills are run through both plans.</p>
+          <ol>
+            <li>Taxable income is household income, minus your deduction, minus that plan’s annual premium. Premiums are treated as pre-tax. The federal marginal rate is the 2026 bracket that taxable income falls in. If taxable income is zero or negative, that rate is 0%.</li>
+            <li>The after-tax premium is the annual premium times one minus your federal rate and any state rate you enter. When the payroll switch is on, that price also drops by 7.65% for FICA.</li>
+            <li>Your share of a bill is everything up to the deductible, plus coinsurance on the rest. It stops at the plan’s out-of-pocket maximum.</li>
+            <li>HRA total cost is the after-tax premium plus whatever part of your share the HRA deposit does not cover. Leftover HRA dollars are not yours, so they are not subtracted.</li>
+            <li>HSA tax savings equal your own contribution times the federal rate, plus state, plus 7.65% when the payroll switch is on. The employer’s HSA deposit is already tax-free, so it is not counted again.</li>
+            <li>HSA total cost is the after-tax premium, plus your share, minus the employer deposit, minus those tax savings. The contribution itself is not a cost — it stays in the account. A negative total means you come out ahead.</li>
+            <li>HSA left for next year is the employer deposit plus your contribution, minus your share. It cannot go below zero.</li>
+          </ol>
+        </section>
+
+        <section class="prose">
+          <h2>Assumptions</h2>
+          <ul>
+            <li>Coinsurance starts at 20%. You pay billed charges in full until the deductible, then that percentage, and never more than the out-of-pocket maximum. Change the percent if your plan differs.</li>
+            <li>The HRA pays any out-of-pocket cost up to its balance. Money it does not spend is the employer’s, not yours.</li>
+            <li>Only federal income tax is included unless you set a state rate. The default state rate is 0%.</li>
+            <li>The HSA starts the year empty. Employer and employee contributions are added, then care is paid from the account. A leftover balance is yours next year.</li>
+            <li>One marginal rate is applied to the whole premium and the whole HSA contribution. A contribution that would cross into a lower bracket is still valued at the higher rate. The bracket is measured after the premium and before the HSA contribution.</li>
+            <li>FICA savings (7.65%) apply to both premiums and to your HSA contribution only when the payroll switch is on.</li>
+            <li>Your employee contribution cannot exceed the HSA limit minus the employer deposit. The 2026 limits in the form are $8,750 for family coverage and $4,400 for self-only coverage.</li>
+            <li>This is a simplified comparison, not tax, legal, or benefits advice. Check your plan documents and a tax professional before you enroll.</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>2026 federal brackets and the standard deduction are from IRS Revenue Procedure 2025-32. HSA contribution limits are from IRS Revenue Procedure 2025-19. This page does not file anything and is not tax advice.</p>
+    </footer>
+  </div>
+  <noscript><p class="wrap">This calculator needs JavaScript. It still runs entirely in your browser.</p></noscript>
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
