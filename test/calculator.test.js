@@ -12,13 +12,13 @@ const {
 } = require("../calc.js");
 
 const REFERENCE = [
-  { billed: 0, hraShare: 0, hsaShare: 0, hraTotal: 2808, hsaTotal: -1806, winner: "HSA", advantage: 4614, hsaLeft: 8750 },
-  { billed: 1500, hraShare: 1500, hsaShare: 1500, hraTotal: 2808, hsaTotal: -306, winner: "HSA", advantage: 3114, hsaLeft: 7250 },
-  { billed: 4000, hraShare: 2000, hsaShare: 4000, hraTotal: 2808, hsaTotal: 2194, winner: "HSA", advantage: 614, hsaLeft: 4750 },
-  { billed: 5000, hraShare: 2200, hsaShare: 4200, hraTotal: 2808, hsaTotal: 2394, winner: "HSA", advantage: 414, hsaLeft: 4550 },
-  { billed: 10000, hraShare: 3200, hsaShare: 5200, hraTotal: 2808, hsaTotal: 3394, winner: "HRA", advantage: 586, hsaLeft: 3550 },
-  { billed: 20000, hraShare: 5200, hsaShare: 7200, hraTotal: 4008, hsaTotal: 5394, winner: "HRA", advantage: 1386, hsaLeft: 1550 },
-  { billed: 30000, hraShare: 7000, hsaShare: 8000, hraTotal: 5808, hsaTotal: 6194, winner: "HRA", advantage: 386, hsaLeft: 750 },
+  { billed: 0, hraShare: 0, hsaShare: 0, hraTotal: 3168, hsaTotal: -916, winner: "HSA", advantage: 4084, hsaLeft: 8750 },
+  { billed: 1500, hraShare: 1500, hsaShare: 1500, hraTotal: 3168, hsaTotal: 584, winner: "HSA", advantage: 2584, hsaLeft: 7250 },
+  { billed: 4000, hraShare: 2000, hsaShare: 4000, hraTotal: 3168, hsaTotal: 3084, winner: "HSA", advantage: 84, hsaLeft: 4750 },
+  { billed: 5000, hraShare: 2200, hsaShare: 4200, hraTotal: 3168, hsaTotal: 3284, winner: "HRA", advantage: 116, hsaLeft: 4550 },
+  { billed: 10000, hraShare: 3200, hsaShare: 5200, hraTotal: 3168, hsaTotal: 4284, winner: "HRA", advantage: 1116, hsaLeft: 3550 },
+  { billed: 20000, hraShare: 5200, hsaShare: 7200, hraTotal: 4368, hsaTotal: 6284, winner: "HRA", advantage: 1916, hsaLeft: 1550 },
+  { billed: 30000, hraShare: 7000, hsaShare: 8000, hraTotal: 6168, hsaTotal: 7084, winner: "HRA", advantage: 916, hsaLeft: 750 },
 ];
 
 function withInput(patch) {
@@ -31,6 +31,7 @@ function withInput(patch) {
 }
 
 test("default inputs match the 2026 reference table (payroll toggle off)", () => {
+  assert.equal(DEFAULT_INPUT.income, 100000);
   assert.equal(DEFAULT_INPUT.payrollHsa, false);
   assert.equal(DEFAULT_INPUT.stateRate, 0);
   for (const expected of REFERENCE) {
@@ -47,11 +48,11 @@ test("default inputs match the 2026 reference table (payroll toggle off)", () =>
   }
 });
 
-test("HRA total stays $2,808 until member share passes the $4,000 deposit", () => {
+test("HRA total stays $3,168 until member share passes the $4,000 deposit", () => {
   for (const billed of [0, 1500, 4000, 5000, 10000, 14000]) {
     const judged = judge(evaluate(DEFAULT_INPUT, billed));
     assert.ok(judged.hraShare <= 4000, `share at ${billed} was ${judged.hraShare}`);
-    assert.equal(judged.hraTotal, 2808, `HRA total at ${billed}`);
+    assert.equal(judged.hraTotal, 3168, `HRA total at ${billed}`);
   }
 
   const atDeposit = evaluate(DEFAULT_INPUT, 14000);
@@ -59,23 +60,23 @@ test("HRA total stays $2,808 until member share passes the $4,000 deposit", () =
 
   const past = judge(evaluate(DEFAULT_INPUT, 15000));
   assert.equal(past.hraShare, 4200);
-  assert.equal(past.hraTotal, 3008);
+  assert.equal(past.hraTotal, 3368);
 
   const zero = judge(evaluate(DEFAULT_INPUT, 0));
-  assert.equal(zero.hsaTotal, -1806);
+  assert.equal(zero.hsaTotal, -916);
 });
 
-test("crossover with default inputs is about $7,070 of billed charges", () => {
+test("crossover with default inputs is about $4,421 of billed charges", () => {
   const crossings = findCrossovers(DEFAULT_INPUT);
   assert.equal(crossings.length, 1);
   const crossover = crossings[0];
-  assert.ok(crossover > 7060 && crossover < 7080, `crossover was ${crossover}`);
+  assert.ok(crossover > 4410 && crossover < 4430, `crossover was ${crossover}`);
 
   const atCross = evaluate(DEFAULT_INPUT, crossover);
   assert.ok(Math.abs(atCross.hra.total - atCross.hsa.total) < 0.05);
 
-  const below = judge(evaluate(DEFAULT_INPUT, 5000));
-  const above = judge(evaluate(DEFAULT_INPUT, 10000));
+  const below = judge(evaluate(DEFAULT_INPUT, 4000));
+  const above = judge(evaluate(DEFAULT_INPUT, 5000));
   assert.equal(below.winner, "HSA");
   assert.equal(above.winner, "HRA");
 });
@@ -115,23 +116,23 @@ test("2026 brackets and deductions match IRS Rev. Proc. 2025-32 and 2025-19", ()
   assert.equal(federalMarginalRate(640600.01, "single"), 0.37);
 });
 
-test("default taxable income uses the premium for that plan and the 22% bracket", () => {
+test("default taxable income uses the premium for that plan and the 12% bracket", () => {
   const row = evaluate(DEFAULT_INPUT, 0);
-  assert.equal(row.hra.taxableIncome, 134200);
-  assert.equal(row.hsa.taxableIncome, 136648);
-  assert.equal(row.hra.marginalRate, 0.22);
-  assert.equal(row.hsa.marginalRate, 0.22);
-  assert.equal(row.hra.afterTaxPremium, 2808);
-  assert.ok(Math.abs(row.hsa.taxSavings - 1705) < 1e-6);
+  assert.equal(row.hra.taxableIncome, 64200);
+  assert.equal(row.hsa.taxableIncome, 66648);
+  assert.equal(row.hra.marginalRate, 0.12);
+  assert.equal(row.hsa.marginalRate, 0.12);
+  assert.equal(row.hra.afterTaxPremium, 3168);
+  assert.ok(Math.abs(row.hsa.taxSavings - 930) < 1e-6);
   assert.equal(row.hsa.employeeContribution, 7750);
 });
 
 test("employee HSA contribution is capped at the limit minus the employer deposit", () => {
   const row = evaluate(withInput({ hsa: { employeeContribution: 999999 } }), 0);
   assert.equal(row.hsa.employeeContribution, 7750);
-  assert.ok(Math.abs(row.hsa.taxSavings - 1705) < 1e-6);
+  assert.ok(Math.abs(row.hsa.taxSavings - 930) < 1e-6);
   const judged = judge(row);
-  assert.equal(judged.hsaTotal, -1806);
+  assert.equal(judged.hsaTotal, -916);
 });
 
 test("HSA balance left for next year cannot go below zero", () => {
@@ -153,7 +154,7 @@ test("payroll toggle adds 7.65% FICA savings and does not change medical shares"
   assert.equal(judged.hraShare, 0);
   assert.equal(judged.hsaShare, 0);
   assert.equal(judged.hsaLeft, 8750);
-  assert.equal(judged.hraTotal, 2533);
-  assert.equal(judged.hsaTotal, -2487);
-  assert.ok(judged.hsaTotal < -1806);
+  assert.equal(judged.hraTotal, 2893);
+  assert.equal(judged.hsaTotal, -1597);
+  assert.ok(judged.hsaTotal < -916);
 });

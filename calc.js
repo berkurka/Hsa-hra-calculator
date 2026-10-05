@@ -71,7 +71,7 @@
   };
 
   var DEFAULT_INPUT = {
-    income: 170000,
+    income: 100000,
     filingStatus: "mfj",
     deductionMode: "standard",
     itemizedDeduction: 32200,
