@@ -20,11 +20,11 @@ Then visit http://localhost:8000.
 
 ## What the defaults show
 
-With the payroll switch off, married filing jointly, and the 22% bracket:
+With the payroll switch off, married filing jointly, household income of $100,000, and the 12% bracket:
 
-- HRA total cost stays **$2,808** until your share passes the $4,000 HRA deposit, which happens at about **$14,000** of billed charges.
-- HSA total cost at **$0** billed is **−$1,806** (you come out ahead before any bills).
-- The two plans tie near **$7,100** of billed charges (about $7,072 with these defaults). Below that, the HSA plan costs less. Above that, the HRA plan costs less.
+- HRA total cost stays **$3,168** until your share passes the $4,000 HRA deposit, which happens at about **$14,000** of billed charges.
+- HSA total cost at **$0** billed is **−$916** (you come out ahead before any bills).
+- The two plans tie near **$4,400** of billed charges (about $4,421 with these defaults). Below that, the HSA plan costs less. Above that, the HRA plan costs less.
 
 ## Tests
 
